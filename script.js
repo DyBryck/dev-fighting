@@ -51,9 +51,8 @@ const characters = [
 
 /**
  * @summary Disparition en fondu de la starting page et apparition en fondu de la prochaine page
- * @param {*} containerClass Classe à rajouter au prochain container, (si c'est deux joueurs il y aura deux splasharts)
  */
-const toggleView = (containerClass) => {
+const toggleView = () => {
   startingPage.classList.add("fade-out");
 
   startingPage.addEventListener(
@@ -65,18 +64,6 @@ const toggleView = (containerClass) => {
       selectChamp.style.display = "flex";
       selectChamp.classList.add("fade-in");
 
-      const container = document.createElement("div");
-      container.classList.add(containerClass);
-      selectChamp.insertBefore(container, charactersContainer);
-
-      if (containerClass === "splasharts-container") {
-        for (let i = 0; i < 2; i++) {
-          const splashart = document.createElement("div");
-          splashart.classList.add("splashart");
-          container.appendChild(splashart);
-        }
-      }
-
       setTimeout(() => {
         selectChamp.classList.add("visible");
       }, 50);
@@ -85,8 +72,9 @@ const toggleView = (containerClass) => {
   );
 };
 
-onePlayer.addEventListener("click", () => toggleView("splashart-container"));
-pvp.addEventListener("click", () => toggleView("splasharts-container"));
+document
+  .querySelectorAll(".choice")
+  .forEach((item) => item.addEventListener("click", () => toggleView()));
 
 /**
  * @summary Retire la classe "force" qui force les images P1 et P2 à rester affichées
@@ -115,8 +103,11 @@ const handleHover = (img, display) => {
  * @returns
  */
 
-const showSplashart = (character, cover) => {
-  const splashartContainer = document.querySelector(".splashart-container");
+const showSplashart = (numberOfPlayers, character, cover) => {
+  const splashartContainer =
+    numberOfPlayers === 1
+      ? document.querySelector(".splashart-container")
+      : document.querySelector(".splasharts-container");
   if (!splashartContainer) return;
 
   Array.from(charactersContainer.children).forEach((child) =>
@@ -132,7 +123,7 @@ const showSplashart = (character, cover) => {
 };
 
 /**
- * @summary génère la liste des personnages et leurs eventListener
+ * @summary Génère la liste des personnages et leurs eventListener
  */
 const generateCovers = () => {
   characters.forEach((character) => {
