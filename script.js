@@ -49,6 +49,10 @@ const characters = [
   },
 ];
 
+/**
+ * @summary Disparition en fondu de la starting page et apparition en fondu de la prochaine page
+ * @param {*} containerClass Classe à rajouter au prochain container, (si c'est deux joueurs il y aura deux splasharts)
+ */
 const toggleView = (containerClass) => {
   startingPage.classList.add("fade-out");
 
@@ -84,6 +88,9 @@ const toggleView = (containerClass) => {
 onePlayer.addEventListener("click", () => toggleView("splashart-container"));
 pvp.addEventListener("click", () => toggleView("splasharts-container"));
 
+/**
+ * @summary Retire la classe "force" qui force les images P1 et P2 à rester affichées
+ */
 const resetForces = () => {
   Array.from(charactersContainer.children).forEach((child) => {
     child.querySelectorAll(".player1, .player2").forEach((player) => {
@@ -92,9 +99,21 @@ const resetForces = () => {
   });
 };
 
+/**
+ * @summary Gère le hover des images P1 et P2
+ * @param {*} img Image P1 ou P2
+ * @param {*} display Booléen, si vrai alors on affiche l'image, si faux on la masque
+ */
 const handleHover = (img, display) => {
   img.style.display = display ? "block" : "none";
 };
+
+/**
+ * @summary Affiche le splashart du personnage
+ * @param {*} character personnage
+ * @param {*} cover source de l'image
+ * @returns
+ */
 
 const showSplashart = (character, cover) => {
   const splashartContainer = document.querySelector(".splashart-container");
@@ -112,6 +131,9 @@ const showSplashart = (character, cover) => {
   cover.classList.add("active");
 };
 
+/**
+ * @summary génère la liste des personnages et leurs eventListener
+ */
 const generateCovers = () => {
   characters.forEach((character) => {
     const coverContainer = document.createElement("div");
