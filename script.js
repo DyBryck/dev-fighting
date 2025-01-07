@@ -21,7 +21,7 @@ const characters = [
   {
     name: "JavaScript",
     splashart: "./assets/splasharts/javascript.png",
-    cover: "./assets/covers/javascript.tiff",
+    cover: "./assets/covers/javascript.png",
   },
   {
     name: "PhP",
@@ -82,6 +82,7 @@ twoPlayers.addEventListener("click", () => toggleView(2));
  */
 const resetForces = () => {
   Array.from(charactersContainer.children).forEach((child) => {
+    /* convertit tous les enfants html en tab js */
     child.querySelectorAll(".player1, .player2").forEach((player) => {
       player.classList.remove("force");
     });
@@ -104,8 +105,9 @@ const handleHover = (img, display) => {
  * @returns
  */
 
-const showSplashart = (player, character, cover) => {
-  console.log(player, character, cover);
+const showSplashart = (player, character, cover, nbPlayers) => {
+  console.log(nbPlayers);
+
   const splashartLeft = document.querySelector(".splashart-left");
   const splashartRight = document.querySelector(".splashart-right");
 
@@ -116,14 +118,23 @@ const showSplashart = (player, character, cover) => {
   );
 
   if (player === 1) {
-    splashartLeft.innerHTML = "";
+    splashartLeft.innerHTML = ""; /* on vide le dom */
     const splashart = document.createElement("img");
     splashart.src = character.splashart;
     splashart.classList.add("splashart");
     splashartLeft.appendChild(splashart);
     cover.classList.add("active");
+    if (nbPlayers === 1) {
+      console.log("entrée dans le if");
+      const splashart = document.createElement("img");
+      const randomNumber = Math.floor(Math.random() * characters.length - 1);
+      splashart.src = characters[randomNumber].splashart;
+      splashart.classList.add("splashart");
+      splashartRight.appendChild(splashart);
+      return;
+    }
   } else {
-    splashartRight.innerHTML = "";
+    splashartRight.innerHTML = ""; /* on vide le dom */
     const splashart = document.createElement("img");
     splashart.src = character.splashart;
     splashart.classList.add("splashart");
@@ -168,10 +179,40 @@ const generateCovers = () => {
       if (currentPlayer === 3) return;
       resetForces();
       (currentPlayer === 1 ? imgP1 : imgP2).classList.add("force");
-      showSplashart(currentPlayer, character, coverContainer);
+      showSplashart(currentPlayer, character, coverContainer, numberOfPlayers);
       currentPlayer++;
     });
   });
 };
 
 generateCovers();
+
+const annuler = document.querySelector(".annuler");
+annuler.addEventListener("click", retour);
+function retour() {
+  console.log(currentPlayer);
+
+  const splashartLeft = document.querySelector(".splashart-left");
+  const splashartRight = document.querySelector(".splashart-right");
+
+  if (currentPlayer === 3) {
+    splashartRight.innerHTML = "";
+
+    // Masquer l'image P2
+    const imgP2 = document.querySelectorAll(".player2");
+    imgP2.forEach((img) => {
+      img.style.display = "none";
+    });
+  } else if (currentPlayer === 2) {
+    splashartLeft.innerHTML = "";
+
+    const imgP1 = document.querySelectorAll(".player1");
+    imgP1.forEach((img) => {
+      img.style.display = "none";
+    });
+  }
+
+  // Réduire currentPlayer tout en s'assurant qu'il ne descend pas en dessous de 1
+  currentPlayer = Math.max(currentPlayer - 1, 1);
+  console.log(currentPlayer);
+}
