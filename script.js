@@ -1,9 +1,10 @@
-const onePlayer = document.querySelector(".op");
-const pvp = document.querySelector(".pvp");
+const onePlayer = document.querySelector(".one-player");
+const twoPlayers = document.querySelector(".two-players");
 const startingPage = document.querySelector(".starting-page");
 const selectChamp = document.querySelector(".select-champ");
 const charactersContainer = document.querySelector(".character-container");
 
+let numberOfPlayers;
 let currentPlayer = 1;
 
 const characters = [
@@ -52,7 +53,8 @@ const characters = [
 /**
  * @summary Disparition en fondu de la starting page et apparition en fondu de la prochaine page
  */
-const toggleView = () => {
+const toggleView = (nbPlayers) => {
+  numberOfPlayers = nbPlayers;
   startingPage.classList.add("fade-out");
 
   startingPage.addEventListener(
@@ -72,9 +74,8 @@ const toggleView = () => {
   );
 };
 
-document
-  .querySelectorAll(".choice")
-  .forEach((item) => item.addEventListener("click", () => toggleView()));
+onePlayer.addEventListener("click", () => toggleView(1));
+twoPlayers.addEventListener("click", () => toggleView(2));
 
 /**
  * @summary Retire la classe "force" qui force les images P1 et P2 à rester affichées

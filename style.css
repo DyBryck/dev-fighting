@@ -67,21 +67,21 @@ body {
 .startButton a {
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: blue;
-  color: white;
+  color: var(--text-color);
 }
 .choix a {
   -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: red;
+  -webkit-text-stroke-color: var(--highlight-red);
   padding: 10px;
-  color: white;
+  color: var(--text-color);
 }
 .choix a:hover {
-  -webkit-text-stroke-color: green;
+  -webkit-text-stroke-color: var(--highlight-green);
   font-size: 1.7rem;
 }
 .choix {
   -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: red;
+  -webkit-text-stroke-color: var(--highlight-red);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -97,7 +97,7 @@ body {
 }
 .credit {
   margin-top: 8%;
-  color: orange;
+  color: var(--credit-color);
 }
 
 .select-champ {
