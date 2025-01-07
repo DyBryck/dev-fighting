@@ -20,12 +20,12 @@ body {
 }
 
 .fade-out {
-  animation: fadeOut 0.5s forwards; /* Disparaît avec fluidité */
+  animation: fadeOut 0.5s forwards;
 }
 
 .fade-in {
   opacity: 0;
-  transition: opacity 0.5s ease; /* Transition pour l'apparition de la page suivante */
+  transition: opacity 0.5s ease;
 }
 
 .visible {
@@ -114,14 +114,25 @@ body {
   background-size: cover;
 }
 
-.splashart-container {
+.splasharts-container {
   position: absolute;
   z-index: -1;
   top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.splashart-container {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .splashart-container img {
-  height: 60%;
+  height: 70%;
 }
 
 .splashart {

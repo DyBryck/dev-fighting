@@ -103,23 +103,32 @@ const handleHover = (img, display) => {
  * @returns
  */
 
-const showSplashart = (numberOfPlayers, character, cover) => {
-  const splashartContainer =
-    numberOfPlayers === 1
-      ? document.querySelector(".splashart-container")
-      : document.querySelector(".splasharts-container");
-  if (!splashartContainer) return;
+const showSplashart = (player, character, cover) => {
+  console.log(player, character, cover);
+  const splashartLeft = document.querySelector(".splashart-left");
+  const splashartRight = document.querySelector(".splashart-right");
 
+  // La classe active permet de garder en couleur le personnage sélectionné
+  // (ne fonctionne pas encore à deux joueurs)
   Array.from(charactersContainer.children).forEach((child) =>
     child.classList.remove("active"),
   );
 
-  splashartContainer.innerHTML = "";
-  const splashart = document.createElement("img");
-  splashart.src = character.splashart;
-  splashart.classList.add("splashart");
-  splashartContainer.appendChild(splashart);
-  cover.classList.add("active");
+  if (player === 1) {
+    splashartLeft.innerHTML = "";
+    const splashart = document.createElement("img");
+    splashart.src = character.splashart;
+    splashart.classList.add("splashart");
+    splashartLeft.appendChild(splashart);
+    cover.classList.add("active");
+  } else {
+    splashartRight.innerHTML = "";
+    const splashart = document.createElement("img");
+    splashart.src = character.splashart;
+    splashart.classList.add("splashart");
+    splashartRight.appendChild(splashart);
+    cover.classList.add("active");
+  }
 };
 
 /**
@@ -158,7 +167,7 @@ const generateCovers = () => {
       if (currentPlayer === 3) return;
       resetForces();
       (currentPlayer === 1 ? imgP1 : imgP2).classList.add("force");
-      showSplashart(character, coverContainer);
+      showSplashart(currentPlayer, character, coverContainer);
       currentPlayer++;
     });
   });
