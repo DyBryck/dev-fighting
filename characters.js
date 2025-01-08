@@ -65,8 +65,10 @@ const charactersList = [
   },
 ];
 
-const checkWin = () => {
-  console.log("Regarde si quelqu'un a gagné");
+let turn = 1;
+
+const checkWin = (target) => {
+  if (target.health === 0) console.log("Quelqu'un a gagné");
 };
 
 const endGame = () => {
@@ -84,15 +86,17 @@ class Character {
   }
 
   launchAttack(target) {
-    console.log("Attaque", target);
+    console.log(this.name + "Attaque :" + target.name + ": " + target.health);
+    target.health -= this.attack;
+    console.log(target.health);
 
-    if (checkWin()) {
+    if (checkWin(target)) {
       endGame();
     }
   }
 }
 
-let characters = [];
+let charactersClasses = [];
 
 charactersList.forEach((character) => {
   const name = character.name;
@@ -101,5 +105,12 @@ charactersList.forEach((character) => {
   const defence = character.defence;
   const power = character.power;
   const charge = character.charge;
-  characters.push(new Character(name, health, attack, defence, power, charge));
+  charactersClasses.push(
+    new Character(name, health, attack, defence, power, charge),
+  );
+});
+
+const attackButton = document.querySelector(".attack-button");
+attackButton.addEventListener("click", () => {
+  charactersClasses[0].launchAttack(charactersClasses[1]);
 });
