@@ -18,9 +18,7 @@
       <div class="baspage">
         <div class="startButton"><a href="#">Select your mode</a></div>
         <div class="choix">
-          <p class="one-player"><a href="#">Player vs computer</a></p>
-          <p>-</p>
-          <p class="two-players"><a href="#">Player vs player</a></p>
+          <p class="launch-game-button"><a href="#">Start</a></p>
         </div>
         <div class="credit">&copy; Tristan Valentin Dylan Alexis</div>
       </div>
@@ -32,6 +30,42 @@
         <button class="annuler">Annuler</button>
       </div>
       <div class="character-container"></div>
+    </div>
+    <div class="fighting-page">
+      <div class="fighters">
+        <div class="fighter fighter-one">
+          <div class="frame frame-player-one">
+            <img src="./assets/covers/css.png" alt="" />
+            <div class="health-bar">
+              <div class="hp"></div>
+              <div class="lost-hp"></div>
+            </div>
+            <div class="power-bar">
+              <div class="power"></div>
+              <div class="power-remaiming"></div>
+            </div>
+          </div>
+        </div>
+        <div class="current-player">Current Player: X</div>
+        <div class="fighter fighter-two">
+          <div class="frame frame-player-two">
+            <img src="./assets/covers/html.png" alt="" />
+            <div class="health-bar">
+              <div class="hp"></div>
+              <div class="lost-hp"></div>
+            </div>
+            <div class="power-bar">
+              <div class="power"></div>
+              <div class="power-remaiming"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button class="attack-button">Attaquer</button>
+        <button class="defence-button">Se défendre</button>
+        <button disabled class="power-button">Power</button>
+      </div>
     </div>
   </body>
   <script src="script.js"></script>

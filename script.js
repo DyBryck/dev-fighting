@@ -1,10 +1,8 @@
-const onePlayer = document.querySelector(".one-player");
-const twoPlayers = document.querySelector(".two-players");
+const launchGameButton = document.querySelector(".launch-game-button");
 const startingPage = document.querySelector(".starting-page");
 const selectChamp = document.querySelector(".select-champ");
 const charactersContainer = document.querySelector(".character-container");
 
-let numberOfPlayers;
 let currentPlayer = 1;
 
 const characters = [
@@ -53,8 +51,7 @@ const characters = [
 /**
  * @summary Disparition en fondu de la starting page et apparition en fondu de la prochaine page
  */
-const toggleView = (nbPlayers) => {
-  numberOfPlayers = nbPlayers;
+const toggleView = () => {
   startingPage.classList.add("fade-out");
 
   startingPage.addEventListener(
@@ -74,8 +71,7 @@ const toggleView = (nbPlayers) => {
   );
 };
 
-onePlayer.addEventListener("click", () => toggleView(1));
-twoPlayers.addEventListener("click", () => toggleView(2));
+launchGameButton.addEventListener("click", () => toggleView());
 
 /**
  * @summary Retire la classe "force" qui force les images P1 et P2 à rester affichées
@@ -105,9 +101,8 @@ const handleHover = (img, display) => {
  * @returns
  */
 
-const showSplashart = (player, character, cover, nbPlayers) => {
-  console.log(nbPlayers);
-
+const showSplashart = (player, character, cover) => {
+  if (player === 3) return;
   const splashartLeft = document.querySelector(".splashart-left");
   const splashartRight = document.querySelector(".splashart-right");
 
@@ -124,15 +119,6 @@ const showSplashart = (player, character, cover, nbPlayers) => {
     splashart.classList.add("splashart");
     splashartLeft.appendChild(splashart);
     cover.classList.add("active");
-    if (nbPlayers === 1) {
-      console.log("entrée dans le if");
-      const splashart = document.createElement("img");
-      const randomNumber = Math.floor(Math.random() * characters.length - 1);
-      splashart.src = characters[randomNumber].splashart;
-      splashart.classList.add("splashart");
-      splashartRight.appendChild(splashart);
-      return;
-    }
   } else {
     splashartRight.innerHTML = ""; /* on vide le dom */
     const splashart = document.createElement("img");
@@ -179,7 +165,7 @@ const generateCovers = () => {
       if (currentPlayer === 3) return;
       resetForces();
       (currentPlayer === 1 ? imgP1 : imgP2).classList.add("force");
-      showSplashart(currentPlayer, character, coverContainer, numberOfPlayers);
+      showSplashart(currentPlayer, character, coverContainer);
       currentPlayer++;
     });
   });
@@ -190,8 +176,6 @@ generateCovers();
 const annuler = document.querySelector(".annuler");
 annuler.addEventListener("click", retour);
 function retour() {
-  console.log(currentPlayer);
-
   const splashartLeft = document.querySelector(".splashart-left");
   const splashartRight = document.querySelector(".splashart-right");
 
@@ -216,3 +200,12 @@ function retour() {
   currentPlayer = Math.max(currentPlayer - 1, 1);
   console.log(currentPlayer);
 }
+
+/*
+  après avoir sélectionné les deux persos:
+  prend en paramètre les classes
+  select champ dégage, page de combat s'affiche
+  J1 à gauche et J2 à droite
+  Bouton attaque, défense, super (grisé tant que power par chargé)
+  Charge en-dessous de chaque perso
+*/
