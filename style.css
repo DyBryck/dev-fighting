@@ -113,7 +113,7 @@ button {
 }
 
 .select-champ {
-  display: flex;
+  display: none;
   justify-content: center;
   position: relative;
   z-index: 0;
@@ -278,34 +278,26 @@ button {
 
 .hp-p1,
 .hp-p2 {
-  width: 100%;
   background-color: green;
   transition: all 0.5s;
+  width: 100%;
 }
 
 .lost-hp-p2,
 .lost-hp-p1 {
-  width: 0%;
   background-color: red;
 }
 
 .power-p1,
 .power-p2 {
   background-color: orange;
-  width: 0%;
+  transition: all 0.5s;
 }
 
 .power-remaiming-p1,
 .power-remaiming-p2 {
   background-color: grey;
   width: 100%;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
 }
 
 .action-buttons {
@@ -325,17 +317,17 @@ button {
   clip-path: polygon(77% 4%, 100% 53%, 83% 100%, 22% 100%, 0% 51%, 19% 1%);
 }
 
+.action-buttons button:active {
+  transform: translate(0, 5px);
+  -webkit-transform: translate(0, 5px);
+}
+
 .attack-button {
   background-color: red;
   transition: all 0.1s;
   -webkit-transition: all 0.1s;
   border-bottom: 10px solid #a1393a;
   text-shadow: 0px -2px#a1393a;
-}
-
-.action-buttons .button:active {
-  transform: translate(0, 5px);
-  -webkit-transform: translate(0, 5px);
 }
 
 .defence-button {

@@ -2,6 +2,8 @@ const launchGameButton = document.querySelector(".launch-game-button");
 const startingPage = document.querySelector(".starting-page");
 const selectChamp = document.querySelector(".select-champ");
 const fightingPage = document.querySelector(".fighting-page");
+const endGamePage = document.querySelector(".endgame-page");
+
 const charactersContainer = document.querySelector(".character-container");
 
 let currentPlayer = 1;
@@ -11,12 +13,12 @@ const charactersList = [
     name: "HTML",
     splashart: "./assets/splasharts/html.png",
     cover: "./assets/covers/html.png",
-    maxHealth: 1700,
-    health: 1700,
-    attack: 100,
-    defence: 100,
-    power: 1000,
+    maxHealth: 2000,
+    health: 2000,
+    attack: 80,
+    defence: 120,
     maxPower: 5,
+    power: 400,
     charge: 0,
   },
   {
@@ -27,45 +29,45 @@ const charactersList = [
     health: 1700,
     attack: 100,
     defence: 100,
-    maxPower: 100,
-    power: 0,
-    charge: 5,
+    maxPower: 5,
+    power: 500,
+    charge: 0,
   },
   {
     name: "JavaScript",
     splashart: "./assets/splasharts/javascript.png",
     cover: "./assets/covers/javascript.png",
-    maxHealth: 1700,
-    health: 1700,
-    attack: 100,
-    defence: 100,
-    maxPower: 100,
-    power: 0,
-    charge: 5,
+    maxHealth: 1800,
+    health: 1800,
+    attack: 90,
+    defence: 110,
+    maxPower: 5,
+    power: 550,
+    charge: 0,
   },
   {
     name: "PhP",
     splashart: "./assets/splasharts/php.png",
     cover: "./assets/covers/php.png",
-    maxHealth: 1700,
-    health: 1700,
-    attack: 100,
-    defence: 100,
-    maxPower: 100,
-    power: 0,
-    charge: 5,
+    maxHealth: 1900,
+    health: 1900,
+    attack: 85,
+    defence: 115,
+    maxPower: 5,
+    power: 450,
+    charge: 0,
   },
   {
     name: "Python",
     splashart: "./assets/splasharts/python.png",
     cover: "./assets/covers/python.png",
-    maxHealth: 1700,
-    health: 1700,
-    attack: 100,
-    defence: 100,
-    maxPower: 100,
-    power: 0,
-    charge: 5,
+    maxHealth: 1600,
+    health: 1600,
+    attack: 120,
+    defence: 80,
+    maxPower: 5,
+    power: 650,
+    charge: 0,
   },
   {
     name: "SQL",
@@ -74,10 +76,10 @@ const charactersList = [
     maxHealth: 1700,
     health: 1700,
     attack: 100,
-    defence: 100,
-    maxPower: 100,
-    power: 0,
-    charge: 5,
+    defence: 90,
+    maxPower: 5,
+    power: 500,
+    charge: 0,
   },
   {
     name: "React",
@@ -85,29 +87,69 @@ const charactersList = [
     cover: "./assets/covers/react.png",
     maxHealth: 1700,
     health: 1700,
-    attack: 100,
-    defence: 100,
-    maxPower: 100,
-    power: 0,
-    charge: 5,
+    attack: 110,
+    defence: 90,
+    maxPower: 5,
+    power: 600,
+    charge: 0,
   },
   {
     name: "Java",
     splashart: "./assets/splasharts/java.png",
     cover: "./assets/covers/java.png",
-    maxHealth: 1700,
-    health: 1700,
-    attack: 100,
-    defence: 100,
-    maxPower: 100,
-    power: 0,
-    charge: 5,
+    maxHealth: 1850,
+    health: 1850,
+    attack: 95,
+    defence: 105,
+    maxPower: 5,
+    power: 525,
+    charge: 0,
   },
 ];
 
 /**
  * @summary Disparition en fondu de la starting page et apparition en fondu de la prochaine page
  */
+// const toggleView = (page) => {
+//   if (page.classList.contains("starting-page")) {
+//     startingPage.classList.add("fade-out");
+
+//     startingPage.addEventListener(
+//       "animationend",
+//       () => {
+//         startingPage.style.display = "none";
+//         startingPage.classList.remove("fade-out");
+
+//         selectChamp.style.display = "flex";
+//         selectChamp.classList.add("fade-in");
+
+//         setTimeout(() => {
+//           selectChamp.classList.add("visible");
+//         }, 50);
+//       },
+//       { once: true },
+//     );
+//   } else {
+//     selectChamp.classList.add("fade-out");
+
+//     selectChamp.addEventListener(
+//       "animationend",
+//       () => {
+//         selectChamp.style.display = "none";
+//         selectChamp.classList.remove("fade-out");
+
+//         fightingPage.style.display = "flex";
+//         fightingPage.classList.add("fade-in");
+
+//         setTimeout(() => {
+//           fightingPage.classList.add("visible");
+//         }, 50);
+//       },
+//       { once: true },
+//     );
+//   }
+// };
+
 const toggleView = (page) => {
   if (page.classList.contains("starting-page")) {
     startingPage.classList.add("fade-out");
@@ -127,7 +169,7 @@ const toggleView = (page) => {
       },
       { once: true },
     );
-  } else {
+  } else if (page.classList.contains("select-champ")) {
     selectChamp.classList.add("fade-out");
 
     selectChamp.addEventListener(
@@ -141,6 +183,24 @@ const toggleView = (page) => {
 
         setTimeout(() => {
           fightingPage.classList.add("visible");
+        }, 50);
+      },
+      { once: true },
+    );
+  } else if (page.classList.contains("endgame-page")) {
+    fightingPage.classList.add("fade-out");
+
+    fightingPage.addEventListener(
+      "animationend",
+      () => {
+        fightingPage.style.display = "none";
+        fightingPage.classList.remove("fade-out");
+
+        endGamePage.style.display = "flex";
+        endGamePage.classList.add("fade-in");
+
+        setTimeout(() => {
+          endGamePage.classList.add("visible");
         }, 50);
       },
       { once: true },
@@ -284,12 +344,22 @@ function retour() {
 }
 
 class Character {
-  constructor(name, maxHealth, health, attack, defence, power, charge) {
+  constructor(
+    name,
+    maxHealth,
+    health,
+    attack,
+    defence,
+    maxPower,
+    power,
+    charge,
+  ) {
     this.name = name;
     this.maxHealth = maxHealth;
     this.health = health;
     this.attack = attack;
     this.defence = defence;
+    this.maxPower = maxPower;
     this.power = power;
     this.charge = charge;
   }
@@ -299,10 +369,11 @@ class Character {
   }
 
   protect(attacker) {
-    this.health += attacker.attack;
+    this.health -= attacker.attack - this.defence;
   }
 
   launchPower(target) {
+    this.charge = -1;
     target.health -= this.power;
   }
 }
@@ -342,8 +413,8 @@ const generateHealthAndPowerBars = (p1Char, p2Char) => {
     powerBar.appendChild(countPower);
     countPower.innerText =
       i === 1
-        ? `${p1Char.power}/${p1Char.charge}`
-        : `${p2Char.power}/${p2Char.charge}`;
+        ? `${p1Char.charge}/${p1Char.maxPower}`
+        : `${p2Char.charge}/${p2Char.maxPower}`;
 
     const power = document.createElement("div");
     power.classList.add(`power-p${i}`);
@@ -367,10 +438,18 @@ const showCurrentPlayer = () => {
 };
 
 const endTurn = () => {
+  if (player1Champion.charge < player1Champion.maxPower) {
+    player1Champion.charge++;
+  }
+
+  if (player2Champion.charge < player2Champion.maxPower) {
+    player2Champion.charge++;
+  }
+
+  updateHealthAndPowerBars();
+  if (checkWin()) endGame();
   player1Choice = undefined;
   player2Choice = undefined;
-  player1Champion.charge++;
-  player2Champion.charge++;
   showCurrentPlayer();
 };
 
@@ -388,7 +467,6 @@ function randomBackground() {
   const fightingPage = document.querySelector(".fighting-page");
   const randomIndex = Math.floor(Math.random() * backgrounds.length);
   fightingPage.style.backgroundImage = `url("${backgrounds[randomIndex]}")`;
-  console.log(fightingPage);
 }
 
 const launchGame = (p1Char, p2Char) => {
@@ -404,6 +482,7 @@ const launchGame = (p1Char, p2Char) => {
     player1Character.health,
     player1Character.attack,
     player1Character.defence,
+    player1Character.maxPower,
     player1Character.power,
     player1Character.charge,
   );
@@ -413,6 +492,7 @@ const launchGame = (p1Char, p2Char) => {
     player2Character.health,
     player2Character.attack,
     player2Character.defence,
+    player2Character.maxPower,
     player2Character.power,
     player2Character.charge,
   );
@@ -421,29 +501,55 @@ const launchGame = (p1Char, p2Char) => {
 let player1Choice;
 let player2Choice;
 
-const PvPerdu = () => {
+const updateHealthAndPowerBars = () => {
   const hpp1 = document.querySelector(".hp-p1");
   const hpp1lost = document.querySelector(".lost-hp-p1");
   const hpBarP1 = document.querySelector(".hpBar-p1");
+  const powerBarP1 = document.querySelector(".power-p1");
+  const powerRemaimingP1 = document.querySelector(".power-remaiming-p1");
+  const countPowerP1 = document.querySelector(".countPower-p1");
+
   const hpp2 = document.querySelector(".hp-p2");
   const hpp2lost = document.querySelector(".lost-hp-p2");
   const hpBarP2 = document.querySelector(".hpBar-p2");
+  const powerBarP2 = document.querySelector(".power-p2");
+  const powerRemaimingP2 = document.querySelector(".power-remaiming-p2");
+  const countPowerP2 = document.querySelector(".countPower-p2");
 
   // Joueur 1
-  const PvJoueur1 = (player1Champion.health / player1Champion.maxHealth) * 100;
-  const PourcenPvLost1 = 100 - PvJoueur1;
-  hpp1.style.width = `${PvJoueur1}%`;
-  hpp1lost.style.width = `${PourcenPvLost1}%`;
+  const pvJoueur1 = (player1Champion.health / player1Champion.maxHealth) * 100;
+  const pourcenPvLost1 = 100 - pvJoueur1;
+  const powerp1 = (player1Champion.charge / player1Champion.maxPower) * 100;
+  const percentPowerP1 = 100 - powerp1;
+
+  hpp1.style.width = `${pvJoueur1}%`;
+  hpp1lost.style.width = `${pourcenPvLost1}%`;
   hpBarP1.innerText = "";
   hpBarP1.innerText = player1Champion.health;
+  powerBarP1.style.width = `${powerp1}%`;
+  powerRemaimingP1.style.width = `${percentPowerP1}%`;
+  countPowerP1.innerText = "";
+  countPowerP1.innerText = `${player1Champion.charge}/${player1Champion.maxPower}`;
 
   // Joueur 2
-  const PvJoueur2 = (player2Champion.health / player2Champion.maxHealth) * 100;
-  const PourcenPvLost2 = 100 - PvJoueur2;
-  hpp2.style.width = `${PvJoueur2}%`;
-  hpp2lost.style.width = `${PourcenPvLost2}%`;
+  const pvJoueur2 = (player2Champion.health / player2Champion.maxHealth) * 100;
+  const pourcenPvLost2 = 100 - pvJoueur2;
+  const powerp2 = (player1Champion.charge / player1Champion.maxPower) * 100;
+  const percentPowerP2 = 100 - powerp1;
+
+  hpp2.style.width = `${pvJoueur2}%`;
+  hpp2lost.style.width = `${pourcenPvLost2}%`;
   hpBarP2.innerText = "";
   hpBarP2.innerText = player2Champion.health;
+  powerBarP2.style.width = `${powerp2}%`;
+  powerRemaimingP2.style.width = `${percentPowerP2}%`;
+  countPowerP2.innerText = "";
+  countPowerP2.innerText = `${player2Champion.charge}/${player2Champion.maxPower}`;
+
+  const powerButton = document.querySelector(".power-button");
+  if (player1Champion.charge === player1Champion.maxPower) {
+    powerButton.disabled = false;
+  }
 };
 
 const getAction = (choice) => {
@@ -465,20 +571,19 @@ const playAction = () => {
           console.log("Les 2 joueurs attaquent");
           player1Champion.launchAttack(player2Champion);
           player2Champion.launchAttack(player1Champion);
-          PvPerdu();
           endTurn();
           break;
 
         case "defence-button":
-          console.log("Joueur 1 attaque joueur 2 se défend");
-          player1Choice = undefined;
-          player2Choice = undefined;
+          player2Champion.protect(player1Champion);
+          endTurn();
           break;
 
         case "power-button":
+          player1Champion.launchAttack(player2Champion);
+          player2Champion.launchPower(player1Champion);
           console.log("Joueur 1 attauqe joueur 2 super pouvoir");
-          player1Choice = undefined;
-          player2Choice = undefined;
+          endTurn();
           break;
 
         default:
@@ -489,20 +594,17 @@ const playAction = () => {
       switch (player2Choice) {
         case "attack-button":
           console.log("Joueur 1 se défend joueur 2 attaque");
-          player1Choice = undefined;
-          player2Choice = undefined;
+          endTurn();
           break;
 
         case "defence-button":
           console.log("Les 2 joueurs se défendent");
-          player1Choice = undefined;
-          player2Choice = undefined;
+          endTurn();
           break;
 
         case "power-button":
           console.log("Joueur 1 se défend joueur 2 super pouvoir");
-          player1Choice = undefined;
-          player2Choice = undefined;
+          endTurn();
           break;
 
         default:
@@ -513,20 +615,18 @@ const playAction = () => {
       switch (player2Choice) {
         case "attack-button":
           console.log("Joueur 1 super pouvoir joueur 2 attaque");
-          player1Choice = undefined;
-          player2Choice = undefined;
+          endTurn();
           break;
 
         case "defence-button":
           console.log("Joueur 1 super pouvoir joueur 2 se défend");
-          player1Choice = undefined;
-          player2Choice = undefined;
+          endTurn();
           break;
 
         case "power-button":
-          console.log("Joueur 1 super pouvoir joueur 2 super pouvoir");
-          player1Choice = undefined;
-          player2Choice = undefined;
+          player1Champion.launchPower(player2Champion);
+          player2Champion.launchPower(player1Champion);
+          endTurn();
           break;
 
         default:
@@ -544,14 +644,17 @@ for (let i = 0; i < choicesButtons.length; i++) {
   choicesButtons[i].addEventListener("click", () => getAction(choice));
 }
 
-const checkWin = (target1, target2) => {
-  if (target1.health <= 0 && target2.health <= 0) {
+const checkWin = () => {
+  if (player1Champion.health <= 0 && player2Champion.health <= 0) {
     console.log("Égalité!");
     return true;
-  } else if (target1.health <= 0 || target2.health <= 0) return true;
+  } else if (player1Champion.health <= 0 || player2Champion.health <= 0)
+    return true;
   else return false;
 };
 
 const endGame = () => {
-  console.log("Jeu terminé");
+  setTimeout(() => {
+    toggleView(endGamePage);
+  }, 1000);
 };
