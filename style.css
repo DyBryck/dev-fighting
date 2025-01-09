@@ -280,7 +280,6 @@ button {
 .hp-p2 {
   background-color: green;
   transition: all 0.5s;
-  width: 100%;
 }
 
 .lost-hp-p2,
@@ -297,7 +296,6 @@ button {
 .power-remaiming-p1,
 .power-remaiming-p2 {
   background-color: grey;
-  width: 100%;
 }
 
 .action-buttons {

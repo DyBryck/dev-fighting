@@ -334,18 +334,13 @@ class Character {
   }
 
   launchPower(target) {
-    this.charge = -1;
     target.health -= this.power;
   }
 }
 
-const toggleDisabled = () => {
+const setPowerButtonDisabledTo = (trueOrFalse) => {
   const powerButton = document.querySelector(".power-button");
-  if (player1Champion.charge === player1Champion.maxPower) {
-    powerButton.disabled = false;
-  } else if (player2Champion.charge === player2Champion.maxPower) {
-    powerButton.disabled = false;
-  }
+  powerButton.disabled = trueOrFalse;
 };
 
 const generateHealthAndPowerBars = (p1Char, p2Char) => {
@@ -404,7 +399,7 @@ let player2Champion;
 const showCurrentPlayer = () => {
   const textContainer = document.querySelector(".current-player");
   textContainer.innerText = "";
-  textContainer.innerText = `Player ${currentPlayer}, choose an action!"`;
+  textContainer.innerText = `Player ${currentPlayer}, choose an action!`;
 };
 
 const endTurn = () => {
@@ -466,6 +461,8 @@ const launchGame = (p1Char, p2Char) => {
     player2Character.power,
     player2Character.charge,
   );
+
+  updateHealthAndPowerBars();
 };
 
 let player1Choice;
@@ -504,8 +501,8 @@ const updateHealthAndPowerBars = () => {
   // Joueur 2
   const pvJoueur2 = (player2Champion.health / player2Champion.maxHealth) * 100;
   const pourcenPvLost2 = 100 - pvJoueur2;
-  const powerp2 = (player1Champion.charge / player1Champion.maxPower) * 100;
-  const percentPowerP2 = 100 - powerp1;
+  const powerp2 = (player2Champion.charge / player2Champion.maxPower) * 100;
+  const percentPowerP2 = 100 - powerp2;
 
   hpp2.style.width = `${pvJoueur2}%`;
   hpp2lost.style.width = `${pourcenPvLost2}%`;
@@ -518,6 +515,9 @@ const updateHealthAndPowerBars = () => {
 };
 
 const getAction = (choice) => {
+  if (player2Champion.charge >= player2Champion.maxPower) {
+    setPowerButtonDisabledTo(false);
+  } else setPowerButtonDisabledTo(true);
   currentPlayer === 1 ? (player1Choice = choice) : (player2Choice = choice);
 
   if (player1Choice && player2Choice) {
@@ -531,25 +531,23 @@ const getAction = (choice) => {
 const playAction = () => {
   switch (player1Choice) {
     case "attack-button":
-      toggleDisabled();
       switch (player2Choice) {
         case "attack-button":
-          toggleDisabled();
           player1Champion.launchAttack(player2Champion);
           player2Champion.launchAttack(player1Champion);
           endTurn();
           break;
 
         case "defence-button":
-          toggleDisabled();
           player2Champion.protect(player1Champion.attack);
           endTurn();
           break;
 
         case "power-button":
-          toggleDisabled();
           player1Champion.launchAttack(player2Champion);
           player2Champion.launchPower(player1Champion);
+          player2Champion.charge = -1;
+          setPowerButtonDisabledTo(true);
           endTurn();
           break;
 
@@ -558,22 +556,20 @@ const playAction = () => {
       }
 
     case "defence-button":
-      toggleDisabled();
       switch (player2Choice) {
         case "attack-button":
-          toggleDisabled();
           player1Champion.protect(player2Champion.attack);
           endTurn();
           break;
 
         case "defence-button":
-          toggleDisabled();
           endTurn();
           break;
 
         case "power-button":
-          toggleDisabled();
           player1Champion.protect(player2Champion.power);
+          player2Champion.charge = -1;
+          setPowerButtonDisabledTo(true);
           endTurn();
           break;
 
@@ -582,25 +578,28 @@ const playAction = () => {
       }
 
     case "power-button":
-      toggleDisabled();
       switch (player2Choice) {
         case "attack-button":
-          toggleDisabled();
           player1Champion.launchPower(player2Champion);
+          player1Champion.charge = -1;
           player2Champion.launchAttack(player1Champion);
+          setPowerButtonDisabledTo(true);
           endTurn();
           break;
 
         case "defence-button":
-          toggleDisabled();
           player2Champion.protect(player1Champion.power);
+          player1Champion.charge = -1;
+          setPowerButtonDisabledTo(true);
           endTurn();
           break;
 
         case "power-button":
-          toggleDisabled();
           player1Champion.launchPower(player2Champion);
+          player1Champion.charge = -1;
           player2Champion.launchPower(player1Champion);
+          player2Champion.charge = -1;
+          setPowerButtonDisabledTo(true);
           endTurn();
           break;
 
@@ -611,6 +610,8 @@ const playAction = () => {
     default:
       break;
   }
+  if (player1Champion.charge >= player1Champion.maxPower)
+    setPowerButtonDisabledTo(false);
 };
 
 const choicesButtons = document.querySelector(".action-buttons").children;
