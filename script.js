@@ -424,20 +424,26 @@ let player2Choice;
 const PvPerdu = () => {
   const hpp1 = document.querySelector(".hp-p1");
   const hpp1lost = document.querySelector(".lost-hp-p1");
+  const hpBarP1 = document.querySelector(".hpBar-p1");
   const hpp2 = document.querySelector(".hp-p2");
   const hpp2lost = document.querySelector(".lost-hp-p2");
+  const hpBarP2 = document.querySelector(".hpBar-p2");
 
   // Joueur 1
   const PvJoueur1 = (player1Champion.health / player1Champion.maxHealth) * 100;
   const PourcenPvLost1 = 100 - PvJoueur1;
   hpp1.style.width = `${PvJoueur1}%`;
   hpp1lost.style.width = `${PourcenPvLost1}%`;
+  hpBarP1.innerText = "";
+  hpBarP1.innerText = player1Champion.health;
 
   // Joueur 2
   const PvJoueur2 = (player2Champion.health / player2Champion.maxHealth) * 100;
   const PourcenPvLost2 = 100 - PvJoueur2;
   hpp2.style.width = `${PvJoueur2}%`;
   hpp2lost.style.width = `${PourcenPvLost2}%`;
+  hpBarP2.innerText = "";
+  hpBarP2.innerText = player2Champion.health;
 };
 
 const getAction = (choice) => {
