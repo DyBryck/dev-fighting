@@ -416,6 +416,9 @@ const endTurn = () => {
   player1Choice = undefined;
   player2Choice = undefined;
   showCurrentPlayer();
+
+  if (player1Champion.charge < player1Champion.maxPower)
+    setPowerButtonDisabledTo(true);
 };
 
 const backgrounds = [
