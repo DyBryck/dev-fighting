@@ -15,9 +15,9 @@ const charactersList = [
     health: 1700,
     attack: 100,
     defence: 100,
-    maxPower: 100,
-    power: 0,
-    charge: 5,
+    power: 1000,
+    maxPower: 5,
+    charge: 0,
   },
   {
     name: "CSS",
@@ -284,8 +284,9 @@ function retour() {
 }
 
 class Character {
-  constructor(name, health, attack, defence, power, charge) {
+  constructor(name, maxHealth, health, attack, defence, power, charge) {
     this.name = name;
+    this.maxHealth = maxHealth;
     this.health = health;
     this.attack = attack;
     this.defence = defence;
@@ -293,9 +294,17 @@ class Character {
     this.charge = charge;
   }
 
-  launchAttack(target) {}
+  launchAttack(target) {
+    target.health -= this.attack;
+  }
 
-  protect(attacker) {}
+  protect(attacker) {
+    this.health += attacker.attack;
+  }
+
+  launchPower(target) {
+    target.health -= this.power;
+  }
 }
 
 const generateHealthAndPowerBars = (p1Char, p2Char) => {
@@ -310,6 +319,11 @@ const generateHealthAndPowerBars = (p1Char, p2Char) => {
     const healthBar = document.createElement("div");
     healthBar.classList.add(`health-bar-p${i}`);
 
+    const hpBar = document.createElement("div");
+    hpBar.classList.add(`hpBar-p${i}`);
+    healthBar.appendChild(hpBar);
+    hpBar.innerText = i === 1 ? p1Char.health : p2Char.health;
+
     const hp = document.createElement("div");
     hp.classList.add(`hp-p${i}`);
     healthBar.appendChild(hp);
@@ -322,6 +336,14 @@ const generateHealthAndPowerBars = (p1Char, p2Char) => {
 
     const powerBar = document.createElement("div");
     powerBar.classList.add(`power-bar-p${i}`);
+
+    const countPower = document.createElement("div");
+    countPower.classList.add(`countPower-p${i}`);
+    powerBar.appendChild(countPower);
+    countPower.innerText =
+      i === 1
+        ? `${p1Char.power}/${p1Char.charge}`
+        : `${p2Char.power}/${p2Char.charge}`;
 
     const power = document.createElement("div");
     power.classList.add(`power-p${i}`);
@@ -338,13 +360,47 @@ const generateHealthAndPowerBars = (p1Char, p2Char) => {
 let player1Champion;
 let player2Champion;
 
+const showCurrentPlayer = () => {
+  const textContainer = document.querySelector(".current-player");
+  textContainer.innerText = "";
+  textContainer.innerText = `Player ${currentPlayer}, choose an action!"`;
+};
+
+const endTurn = () => {
+  player1Choice = undefined;
+  player2Choice = undefined;
+  player1Champion.charge++;
+  player2Champion.charge++;
+  showCurrentPlayer();
+};
+
+const backgrounds = [
+  "./assets/background/combat1.gif",
+  "./assets/background/combat2.gif",
+  "./assets/background/combat3.gif",
+  "./assets/background/combat4.gif",
+  "./assets/background/combat5.gif",
+  "./assets/background/combat6.gif",
+  "./assets/background/fight.gif",
+];
+
+function randomBackground() {
+  const fightingPage = document.querySelector(".fighting-page");
+  const randomIndex = Math.floor(Math.random() * backgrounds.length);
+  fightingPage.style.backgroundImage = `url("${backgrounds[randomIndex]}")`;
+  console.log(fightingPage);
+}
+
 const launchGame = (p1Char, p2Char) => {
   currentPlayer = 1;
   toggleView(selectChamp);
+  randomBackground();
   generateHealthAndPowerBars(p1Char, p2Char);
+  showCurrentPlayer();
 
   player1Champion = new Character(
     player1Character.name,
+    player1Character.maxHealth,
     player1Character.health,
     player1Character.attack,
     player1Character.defence,
@@ -353,6 +409,7 @@ const launchGame = (p1Char, p2Char) => {
   );
   player2Champion = new Character(
     player2Character.name,
+    player2Character.maxHealth,
     player2Character.health,
     player2Character.attack,
     player2Character.defence,
@@ -364,41 +421,111 @@ const launchGame = (p1Char, p2Char) => {
 let player1Choice;
 let player2Choice;
 
-const getChoice = (choice) => {
-  currentPlayer === 1 ? (player1Choice = choice) : (player2Choice = choice);
-  return choice;
+const PvPerdu = () => {
+  const hpp1 = document.querySelector(".hp-p1");
+  const hpp1lost = document.querySelector(".lost-hp-p1");
+  const hpp2 = document.querySelector(".hp-p2");
+  const hpp2lost = document.querySelector(".lost-hp-p2");
+
+  // Joueur 1
+  const PvJoueur1 = (player1Champion.health / player1Champion.maxHealth) * 100;
+  const PourcenPvLost1 = 100 - PvJoueur1;
+  hpp1.style.width = `${PvJoueur1}%`;
+  hpp1lost.style.width = `${PourcenPvLost1}%`;
+
+  // Joueur 2
+  const PvJoueur2 = (player2Champion.health / player2Champion.maxHealth) * 100;
+  const PourcenPvLost2 = 100 - PvJoueur2;
+  hpp2.style.width = `${PvJoueur2}%`;
+  hpp2lost.style.width = `${PourcenPvLost2}%`;
 };
 
-const playAction = (action) => {
-  console.log(player1Choice, player2Choice);
-  switch (action) {
-    case "attack-button":
-      if (currentPlayer === 1) {
-        player1Champion.launchAttack(player2Champion);
-        currentPlayer = 2;
-      } else {
-        player2Champion.launchAttack(player1Champion);
-        if (checkWin(player1Champion, player2Champion)) {
-          return endGame();
-        }
+const getAction = (choice) => {
+  currentPlayer === 1 ? (player1Choice = choice) : (player2Choice = choice);
 
-        currentPlayer = 1;
+  if (player1Choice && player2Choice) {
+    playAction();
+  }
+
+  currentPlayer === 1 ? currentPlayer++ : currentPlayer--;
+  showCurrentPlayer();
+};
+
+const playAction = () => {
+  switch (player1Choice) {
+    case "attack-button":
+      switch (player2Choice) {
+        case "attack-button":
+          console.log("Les 2 joueurs attaquent");
+          player1Champion.launchAttack(player2Champion);
+          player2Champion.launchAttack(player1Champion);
+          PvPerdu();
+          endTurn();
+          break;
+
+        case "defence-button":
+          console.log("Joueur 1 attaque joueur 2 se défend");
+          player1Choice = undefined;
+          player2Choice = undefined;
+          break;
+
+        case "power-button":
+          console.log("Joueur 1 attauqe joueur 2 super pouvoir");
+          player1Choice = undefined;
+          player2Choice = undefined;
+          break;
+
+        default:
+          break;
       }
-      break;
 
     case "defence-button":
-      if (currentPlayer === 1) {
-        player1Champion.protect(player2Champion);
-        currentPlayer = 2;
-      } else {
-        player2Champion.protect(player1Champion);
-        currentPlayer = 1;
+      switch (player2Choice) {
+        case "attack-button":
+          console.log("Joueur 1 se défend joueur 2 attaque");
+          player1Choice = undefined;
+          player2Choice = undefined;
+          break;
+
+        case "defence-button":
+          console.log("Les 2 joueurs se défendent");
+          player1Choice = undefined;
+          player2Choice = undefined;
+          break;
+
+        case "power-button":
+          console.log("Joueur 1 se défend joueur 2 super pouvoir");
+          player1Choice = undefined;
+          player2Choice = undefined;
+          break;
+
+        default:
+          break;
       }
-      break;
 
     case "power-button":
-      console.log("Super pouvoir!");
-      break;
+      switch (player2Choice) {
+        case "attack-button":
+          console.log("Joueur 1 super pouvoir joueur 2 attaque");
+          player1Choice = undefined;
+          player2Choice = undefined;
+          break;
+
+        case "defence-button":
+          console.log("Joueur 1 super pouvoir joueur 2 se défend");
+          player1Choice = undefined;
+          player2Choice = undefined;
+          break;
+
+        case "power-button":
+          console.log("Joueur 1 super pouvoir joueur 2 super pouvoir");
+          player1Choice = undefined;
+          player2Choice = undefined;
+          break;
+
+        default:
+          break;
+      }
 
     default:
       break;
@@ -408,16 +535,14 @@ const playAction = (action) => {
 const choicesButtons = document.querySelector(".action-buttons").children;
 for (let i = 0; i < choicesButtons.length; i++) {
   const choice = choicesButtons[i].classList[0];
-  choicesButtons[i].addEventListener("click", () =>
-    playAction(getChoice(choice)),
-  );
+  choicesButtons[i].addEventListener("click", () => getAction(choice));
 }
 
 const checkWin = (target1, target2) => {
-  if (target1.health === 0 && target2.health === 0) {
+  if (target1.health <= 0 && target2.health <= 0) {
     console.log("Égalité!");
     return true;
-  } else if (target1.health === 0 || target2.health === 0) return true;
+  } else if (target1.health <= 0 || target2.health <= 0) return true;
   else return false;
 };
 
