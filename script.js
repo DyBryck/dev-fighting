@@ -3,11 +3,11 @@ const startingPage = document.querySelector(".starting-page");
 const selectChamp = document.querySelector(".select-champ");
 const fightingPage = document.querySelector(".fighting-page");
 const endGamePage = document.querySelector(".endgame-page");
-
 const charactersContainer = document.querySelector(".character-container");
 
 let currentPlayer = 1;
 
+// Liste des personnages
 const charactersList = [
   {
     name: "HTML",
@@ -108,65 +108,40 @@ const charactersList = [
 ];
 
 /**
- * @summary Disparition en fondu de la starting page et apparition en fondu de la prochaine page
+ * @summary Disparition en fondu d'une page à une autre
+ * @param page Classe
  */
-
 const toggleView = (page) => {
-  if (page.classList.contains("starting-page")) {
-    startingPage.classList.add("fade-out");
+  // Défini la page qui disparaîtra en fondu et celle qui apparaîtra, selon les classes
+  const transitions = {
+    "starting-page": { from: startingPage, to: selectChamp },
+    "select-champ": { from: selectChamp, to: fightingPage },
+    "endgame-page": { from: fightingPage, to: endGamePage },
+  };
 
-    startingPage.addEventListener(
-      "animationend",
-      () => {
-        startingPage.style.display = "none";
-        startingPage.classList.remove("fade-out");
+  // Récupère le bon objet en fonction de la classe envoyée en paramètre
+  const transition = transitions[page.classList[0]];
 
-        selectChamp.style.display = "flex";
-        selectChamp.classList.add("fade-in");
+  // Déstructure l'objet transition pour créer des constantes from et to (que l'on retrouve dans l'objet)
+  const { from, to } = transition;
 
-        setTimeout(() => {
-          selectChamp.classList.add("visible");
-        }, 50);
-      },
-      { once: true },
-    );
-  } else if (page.classList.contains("select-champ")) {
-    selectChamp.classList.add("fade-out");
+  from.classList.add("fade-out");
 
-    selectChamp.addEventListener(
-      "animationend",
-      () => {
-        selectChamp.style.display = "none";
-        selectChamp.classList.remove("fade-out");
+  from.addEventListener(
+    "animationend",
+    () => {
+      from.style.display = "none";
+      from.classList.remove("fade-out");
 
-        fightingPage.style.display = "flex";
-        fightingPage.classList.add("fade-in");
+      to.style.display = "flex";
+      to.classList.add("fade-in");
 
-        setTimeout(() => {
-          fightingPage.classList.add("visible");
-        }, 50);
-      },
-      { once: true },
-    );
-  } else if (page.classList.contains("endgame-page")) {
-    fightingPage.classList.add("fade-out");
-
-    fightingPage.addEventListener(
-      "animationend",
-      () => {
-        fightingPage.style.display = "none";
-        fightingPage.classList.remove("fade-out");
-
-        endGamePage.style.display = "flex";
-        endGamePage.classList.add("fade-in");
-
-        setTimeout(() => {
-          endGamePage.classList.add("visible");
-        }, 50);
-      },
-      { once: true },
-    );
-  }
+      setTimeout(() => {
+        to.classList.add("visible");
+      }, 50);
+    },
+    { once: true },
+  );
 };
 
 launchGameButton.addEventListener("click", () => toggleView(startingPage));
@@ -227,7 +202,7 @@ const showSplashart = (player, character, cover) => {
     cover.classList.add("active");
     player2Character = character;
     setTimeout(() => {
-      launchGame(player1Character, player2Character);
+      launchGame();
     }, 1000);
   }
 };
@@ -437,85 +412,91 @@ function randomBackground() {
   fightingPage.style.backgroundImage = `url("${backgrounds[randomIndex]}")`;
 }
 
-const launchGame = (p1Char, p2Char) => {
+const updateHealthAndPowerBars = () => {
+  /**
+   * @summary Calcul en % les HP actuels, HP manquants, Power actuel et Power manquant afin d'adapter la largeur des barres dans le DOM
+   * @param {class} player Personnage du joueur
+   * @param {div} hpSelector Div qui contient le texte du nombre d'HP
+   * @param {div} lostHpSelector Div de la barre d'HP restants (verte)
+   * @param {div} hpBarSelector Div de la barre d'HP perdus (rouge)
+   * @param {div} powerBarSelector Div de la barre de charge (orange)
+   * @param {div} countPowerSelector Div qui contient le compteur du nombre de charge sur le nombre max de charge
+   */
+  const updatePlayerBars = (
+    player,
+    hpSelector,
+    lostHpSelector,
+    hpBarSelector,
+    powerBarSelector,
+    countPowerSelector,
+  ) => {
+    const hpElement = document.querySelector(hpSelector);
+    const lostHpElement = document.querySelector(lostHpSelector);
+    const hpBarElement = document.querySelector(hpBarSelector);
+    const powerBarElement = document.querySelector(powerBarSelector);
+    const countPowerElement = document.querySelector(countPowerSelector);
+
+    const healthPercent = (player.health / player.maxHealth) * 100;
+    const lostHealthPercent = 100 - healthPercent;
+    const powerPercent = (player.charge / player.maxPower) * 100;
+    const remainingPowerPercent = 100 - powerPercent;
+
+    hpElement.style.width = `${healthPercent}%`;
+    lostHpElement.style.width = `${lostHealthPercent}%`;
+    hpBarElement.innerText = player.health;
+    powerBarElement.style.width = `${powerPercent}%`;
+    countPowerElement.innerText = `${player.charge}/${player.maxPower}`;
+  };
+
+  // Met à jour les barres des joueurs
+  updatePlayerBars(
+    player1Champion,
+    ".hp-p1",
+    ".lost-hp-p1",
+    ".hpBar-p1",
+    ".power-p1",
+    ".countPower-p1",
+  );
+
+  updatePlayerBars(
+    player2Champion,
+    ".hp-p2",
+    ".lost-hp-p2",
+    ".hpBar-p2",
+    ".power-p2",
+    ".countPower-p2",
+  );
+};
+
+const launchGame = () => {
   currentPlayer = 1;
   toggleView(selectChamp);
   randomBackground();
-  generateHealthAndPowerBars(p1Char, p2Char);
+  generateHealthAndPowerBars(player1Character, player2Character);
   showCurrentPlayer();
 
-  player1Champion = new Character(
-    player1Character.name,
-    player1Character.maxHealth,
-    player1Character.health,
-    player1Character.attack,
-    player1Character.defence,
-    player1Character.maxPower,
-    player1Character.power,
-    player1Character.charge,
-  );
-  player2Champion = new Character(
-    player2Character.name,
-    player2Character.maxHealth,
-    player2Character.health,
-    player2Character.attack,
-    player2Character.defence,
-    player2Character.maxPower,
-    player2Character.power,
-    player2Character.charge,
-  );
+  // Fonction qui crée un champion
+  const createChampion = (character) =>
+    new Character(
+      character.name,
+      character.maxHealth,
+      character.health,
+      character.attack,
+      character.defence,
+      character.maxPower,
+      character.power,
+      character.charge,
+    );
+
+  player1Champion = createChampion(player1Character);
+  player2Champion = createChampion(player2Character);
 
   updateHealthAndPowerBars();
 };
 
+// Stock les actions des joueurs
 let player1Choice;
 let player2Choice;
-
-const updateHealthAndPowerBars = () => {
-  const hpp1 = document.querySelector(".hp-p1");
-  const hpp1lost = document.querySelector(".lost-hp-p1");
-  const hpBarP1 = document.querySelector(".hpBar-p1");
-  const powerBarP1 = document.querySelector(".power-p1");
-  const powerRemaimingP1 = document.querySelector(".power-remaiming-p1");
-  const countPowerP1 = document.querySelector(".countPower-p1");
-
-  const hpp2 = document.querySelector(".hp-p2");
-  const hpp2lost = document.querySelector(".lost-hp-p2");
-  const hpBarP2 = document.querySelector(".hpBar-p2");
-  const powerBarP2 = document.querySelector(".power-p2");
-  const powerRemaimingP2 = document.querySelector(".power-remaiming-p2");
-  const countPowerP2 = document.querySelector(".countPower-p2");
-
-  // Joueur 1
-  const pvJoueur1 = (player1Champion.health / player1Champion.maxHealth) * 100;
-  const pourcenPvLost1 = 100 - pvJoueur1;
-  const powerp1 = (player1Champion.charge / player1Champion.maxPower) * 100;
-  const percentPowerP1 = 100 - powerp1;
-
-  hpp1.style.width = `${pvJoueur1}%`;
-  hpp1lost.style.width = `${pourcenPvLost1}%`;
-  hpBarP1.innerText = "";
-  hpBarP1.innerText = player1Champion.health;
-  powerBarP1.style.width = `${powerp1}%`;
-  powerRemaimingP1.style.width = `${percentPowerP1}%`;
-  countPowerP1.innerText = "";
-  countPowerP1.innerText = `${player1Champion.charge}/${player1Champion.maxPower}`;
-
-  // Joueur 2
-  const pvJoueur2 = (player2Champion.health / player2Champion.maxHealth) * 100;
-  const pourcenPvLost2 = 100 - pvJoueur2;
-  const powerp2 = (player2Champion.charge / player2Champion.maxPower) * 100;
-  const percentPowerP2 = 100 - powerp2;
-
-  hpp2.style.width = `${pvJoueur2}%`;
-  hpp2lost.style.width = `${pourcenPvLost2}%`;
-  hpBarP2.innerText = "";
-  hpBarP2.innerText = player2Champion.health;
-  powerBarP2.style.width = `${powerp2}%`;
-  powerRemaimingP2.style.width = `${percentPowerP2}%`;
-  countPowerP2.innerText = "";
-  countPowerP2.innerText = `${player2Champion.charge}/${player2Champion.maxPower}`;
-};
 
 const getAction = (choice) => {
   if (player2Champion.charge >= player2Champion.maxPower) {
@@ -532,89 +513,59 @@ const getAction = (choice) => {
 };
 
 const playAction = () => {
-  switch (player1Choice) {
-    case "attack-button":
-      switch (player2Choice) {
-        case "attack-button":
-          player1Champion.launchAttack(player2Champion);
-          player2Champion.launchAttack(player1Champion);
-          endTurn();
-          break;
+  // Fonction qui gère les actions des joueurs
+  const resolveActions = (action1, action2) => {
+    if (action1 === "attack-button" && action2 === "attack-button") {
+      // Les deux joueurs attaquent
+      player1Champion.launchAttack(player2Champion);
+      player2Champion.launchAttack(player1Champion);
+    } // Le joueur 1 attaque et le joueur 2 défend
+    else if (action1 === "attack-button" && action2 === "defence-button") {
+      player2Champion.protect(player1Champion.attack);
+    } // Le joueur 1 attaque et le joueur 2 utilise son pouvoir
+    else if (action1 === "attack-button" && action2 === "power-button") {
+      player1Champion.launchAttack(player2Champion);
+      player2Champion.launchPower(player1Champion);
+      player2Champion.charge = -1;
+    } // Le joueur 1 défend et le joueur 2 attaque
+    else if (action1 === "defence-button" && action2 === "attack-button") {
+      player1Champion.protect(player2Champion.attack);
+    } // Les deux joueurs défendent, rien ne se passe
+    else if (action1 === "defence-button" && action2 === "defence-button") {
+    } // Le joueur 1 défend et le joueur 2 utilise son pouvoir
+    else if (action1 === "defence-button" && action2 === "power-button") {
+      player1Champion.protect(player2Champion.power);
+      player2Champion.charge = -1;
+    } // Le joueur 1 utilise son pouvoir et le joueur 2 attaque
+    else if (action1 === "power-button" && action2 === "attack-button") {
+      player1Champion.launchPower(player2Champion);
+      player1Champion.charge = -1;
+      player2Champion.launchAttack(player1Champion);
+    } // Le joueur
+    else if (action1 === "power-button" && action2 === "defence-button") {
+      player2Champion.protect(player1Champion.power);
+      player1Champion.charge = -1;
+    } else if (action1 === "power-button" && action2 === "power-button") {
+      player1Champion.launchPower(player2Champion);
+      player1Champion.charge = -1;
+      player2Champion.launchPower(player1Champion);
+      player2Champion.charge = -1;
+    }
 
-        case "defence-button":
-          player2Champion.protect(player1Champion.attack);
-          endTurn();
-          break;
+    // Reset charge and disable power button if needed
+    if (action1 === "power-button" || action2 === "power-button") {
+      setPowerButtonDisabledTo(true);
+    }
+  };
 
-        case "power-button":
-          player1Champion.launchAttack(player2Champion);
-          player2Champion.launchPower(player1Champion);
-          player2Champion.charge = -1;
-          setPowerButtonDisabledTo(true);
-          endTurn();
-          break;
+  // Resolve the player actions
+  resolveActions(player1Choice, player2Choice);
+  endTurn();
 
-        default:
-          break;
-      }
-
-    case "defence-button":
-      switch (player2Choice) {
-        case "attack-button":
-          player1Champion.protect(player2Champion.attack);
-          endTurn();
-          break;
-
-        case "defence-button":
-          endTurn();
-          break;
-
-        case "power-button":
-          player1Champion.protect(player2Champion.power);
-          player2Champion.charge = -1;
-          setPowerButtonDisabledTo(true);
-          endTurn();
-          break;
-
-        default:
-          break;
-      }
-
-    case "power-button":
-      switch (player2Choice) {
-        case "attack-button":
-          player1Champion.launchPower(player2Champion);
-          player1Champion.charge = -1;
-          player2Champion.launchAttack(player1Champion);
-          setPowerButtonDisabledTo(true);
-          endTurn();
-          break;
-
-        case "defence-button":
-          player2Champion.protect(player1Champion.power);
-          player1Champion.charge = -1;
-          setPowerButtonDisabledTo(true);
-          endTurn();
-          break;
-
-        case "power-button":
-          player1Champion.launchPower(player2Champion);
-          player1Champion.charge = -1;
-          player2Champion.launchPower(player1Champion);
-          player2Champion.charge = -1;
-          setPowerButtonDisabledTo(true);
-          endTurn();
-          break;
-
-        default:
-          break;
-      }
-
-    default:
-      break;
-  }
-  if (player1Champion.charge >= player1Champion.maxPower)
+  // Enable power button if charge is full
+  if (player1Champion.charge >= player1Champion.maxPower) {
     setPowerButtonDisabledTo(false);
+  }
 };
 
 const choicesButtons = document.querySelector(".action-buttons").children;
