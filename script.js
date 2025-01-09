@@ -110,45 +110,6 @@ const charactersList = [
 /**
  * @summary Disparition en fondu de la starting page et apparition en fondu de la prochaine page
  */
-// const toggleView = (page) => {
-//   if (page.classList.contains("starting-page")) {
-//     startingPage.classList.add("fade-out");
-
-//     startingPage.addEventListener(
-//       "animationend",
-//       () => {
-//         startingPage.style.display = "none";
-//         startingPage.classList.remove("fade-out");
-
-//         selectChamp.style.display = "flex";
-//         selectChamp.classList.add("fade-in");
-
-//         setTimeout(() => {
-//           selectChamp.classList.add("visible");
-//         }, 50);
-//       },
-//       { once: true },
-//     );
-//   } else {
-//     selectChamp.classList.add("fade-out");
-
-//     selectChamp.addEventListener(
-//       "animationend",
-//       () => {
-//         selectChamp.style.display = "none";
-//         selectChamp.classList.remove("fade-out");
-
-//         fightingPage.style.display = "flex";
-//         fightingPage.classList.add("fade-in");
-
-//         setTimeout(() => {
-//           fightingPage.classList.add("visible");
-//         }, 50);
-//       },
-//       { once: true },
-//     );
-//   }
-// };
 
 const toggleView = (page) => {
   if (page.classList.contains("starting-page")) {
@@ -368,8 +329,8 @@ class Character {
     target.health -= this.attack;
   }
 
-  protect(attacker) {
-    this.health -= attacker.attack - this.defence;
+  protect(damages) {
+    this.health -= damages - this.defence;
   }
 
   launchPower(target) {
@@ -377,6 +338,15 @@ class Character {
     target.health -= this.power;
   }
 }
+
+const toggleDisabled = () => {
+  const powerButton = document.querySelector(".power-button");
+  if (player1Champion.charge === player1Champion.maxPower) {
+    powerButton.disabled = false;
+  } else if (player2Champion.charge === player2Champion.maxPower) {
+    powerButton.disabled = false;
+  }
+};
 
 const generateHealthAndPowerBars = (p1Char, p2Char) => {
   const frameP1 = document.querySelector(".frame-player-one");
@@ -545,11 +515,6 @@ const updateHealthAndPowerBars = () => {
   powerRemaimingP2.style.width = `${percentPowerP2}%`;
   countPowerP2.innerText = "";
   countPowerP2.innerText = `${player2Champion.charge}/${player2Champion.maxPower}`;
-
-  const powerButton = document.querySelector(".power-button");
-  if (player1Champion.charge === player1Champion.maxPower) {
-    powerButton.disabled = false;
-  }
 };
 
 const getAction = (choice) => {
@@ -566,23 +531,25 @@ const getAction = (choice) => {
 const playAction = () => {
   switch (player1Choice) {
     case "attack-button":
+      toggleDisabled();
       switch (player2Choice) {
         case "attack-button":
-          console.log("Les 2 joueurs attaquent");
+          toggleDisabled();
           player1Champion.launchAttack(player2Champion);
           player2Champion.launchAttack(player1Champion);
           endTurn();
           break;
 
         case "defence-button":
-          player2Champion.protect(player1Champion);
+          toggleDisabled();
+          player2Champion.protect(player1Champion.attack);
           endTurn();
           break;
 
         case "power-button":
+          toggleDisabled();
           player1Champion.launchAttack(player2Champion);
           player2Champion.launchPower(player1Champion);
-          console.log("Joueur 1 attauqe joueur 2 super pouvoir");
           endTurn();
           break;
 
@@ -591,19 +558,22 @@ const playAction = () => {
       }
 
     case "defence-button":
+      toggleDisabled();
       switch (player2Choice) {
         case "attack-button":
-          console.log("Joueur 1 se défend joueur 2 attaque");
+          toggleDisabled();
+          player1Champion.protect(player2Champion.attack);
           endTurn();
           break;
 
         case "defence-button":
-          console.log("Les 2 joueurs se défendent");
+          toggleDisabled();
           endTurn();
           break;
 
         case "power-button":
-          console.log("Joueur 1 se défend joueur 2 super pouvoir");
+          toggleDisabled();
+          player1Champion.protect(player2Champion.power);
           endTurn();
           break;
 
@@ -612,18 +582,23 @@ const playAction = () => {
       }
 
     case "power-button":
+      toggleDisabled();
       switch (player2Choice) {
         case "attack-button":
-          console.log("Joueur 1 super pouvoir joueur 2 attaque");
+          toggleDisabled();
+          player1Champion.launchPower(player2Champion);
+          player2Champion.launchAttack(player1Champion);
           endTurn();
           break;
 
         case "defence-button":
-          console.log("Joueur 1 super pouvoir joueur 2 se défend");
+          toggleDisabled();
+          player2Champion.protect(player1Champion.power);
           endTurn();
           break;
 
         case "power-button":
+          toggleDisabled();
           player1Champion.launchPower(player2Champion);
           player2Champion.launchPower(player1Champion);
           endTurn();
@@ -644,13 +619,31 @@ for (let i = 0; i < choicesButtons.length; i++) {
   choicesButtons[i].addEventListener("click", () => getAction(choice));
 }
 
+let winner;
+let winnerCover;
+
 const checkWin = () => {
+  const h1 = document.querySelector(".h1");
+  const imgWin = document.createElement("img");
+  imgWin.classList.add("imgWin");
   if (player1Champion.health <= 0 && player2Champion.health <= 0) {
-    console.log("Égalité!");
+    winner = "Égalité";
     return true;
-  } else if (player1Champion.health <= 0 || player2Champion.health <= 0)
+  } else if (player1Champion.health <= 0) {
+    winner = "Player 2";
+    winnerCover = player2Character.cover;
+    imgWin.src = winnerCover;
+    endGamePage.appendChild(imgWin);
+    h1.innerText = `${winner} WIN!`;
     return true;
-  else return false;
+  } else if (player2Champion.health <= 0) {
+    winner = "Player 1";
+    winnerCover = player1Character.cover;
+    imgWin.src = winnerCover;
+    endGamePage.appendChild(imgWin);
+    h1.innerText = `${winner} WIN!`;
+    return true;
+  } else return false;
 };
 
 const endGame = () => {
