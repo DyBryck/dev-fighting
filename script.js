@@ -108,7 +108,8 @@ const charactersList = [
 ];
 
 /**
- * @summary Disparition en fondu d'une page à une autre
+ * @summary Disparition en fondu d'une page à une autre, en rajoutant et retirants des classes
+ * et en jouant avec le display none / flex
  * @param page Classe
  */
 const toggleView = (page) => {
@@ -318,7 +319,12 @@ const setPowerButtonDisabledTo = (trueOrFalse) => {
   powerButton.disabled = trueOrFalse;
 };
 
-const generateHealthAndPowerBars = (p1Char, p2Char) => {
+/**
+ * @summary Génère les barres d'HP et de Pouvoir ainsi que les avatars des personnages
+ * @param {*} p1Char Personnage du joueur 1
+ * @param {*} p2Char Personnage du joueur 2
+ */
+const generateFightInterface = (p1Char, p2Char) => {
   const frameP1 = document.querySelector(".frame-player-one");
   const frameP2 = document.querySelector(".frame-player-two");
 
@@ -371,12 +377,20 @@ const generateHealthAndPowerBars = (p1Char, p2Char) => {
 let player1Champion;
 let player2Champion;
 
+/**
+ * Modifie le texte qui indique quel joueur est entrain de sélectionner son choix
+ */
 const showCurrentPlayer = () => {
   const textContainer = document.querySelector(".current-player");
   textContainer.innerText = "";
   textContainer.innerText = `Player ${currentPlayer}, choose an action!`;
 };
 
+/**
+ * Appelée à la fin de chaque tour, augmente la charge des joueurs, vérifie s'il y a une victoire
+ * reset les choix des joueurs, met à jour le texte du joueur actuel et active le bouton pouvoir
+ * pour le joueur 1 s'il a assez de charges
+ */
 const endTurn = () => {
   if (player1Champion.charge < player1Champion.maxPower) {
     player1Champion.charge++;
@@ -439,7 +453,6 @@ const updateHealthAndPowerBars = () => {
     const healthPercent = (player.health / player.maxHealth) * 100;
     const lostHealthPercent = 100 - healthPercent;
     const powerPercent = (player.charge / player.maxPower) * 100;
-    const remainingPowerPercent = 100 - powerPercent;
 
     hpElement.style.width = `${healthPercent}%`;
     lostHpElement.style.width = `${lostHealthPercent}%`;
@@ -468,11 +481,15 @@ const updateHealthAndPowerBars = () => {
   );
 };
 
+/**
+ * Appelée une fois que les joueurs ont sélectionné leurs personnages, génère l'interface
+ * crée les classes à partir de la sélection des personnages
+ */
 const launchGame = () => {
   currentPlayer = 1;
   toggleView(selectChamp);
   randomBackground();
-  generateHealthAndPowerBars(player1Character, player2Character);
+  generateFightInterface(player1Character, player2Character);
   showCurrentPlayer();
 
   // Fonction qui crée un champion
@@ -541,33 +558,34 @@ const playAction = () => {
       player1Champion.launchPower(player2Champion);
       player1Champion.charge = -1;
       player2Champion.launchAttack(player1Champion);
-    } // Le joueur
+    } // Le joueur 1 utilise son pouvoir et le joueur 2 défend
     else if (action1 === "power-button" && action2 === "defence-button") {
       player2Champion.protect(player1Champion.power);
       player1Champion.charge = -1;
-    } else if (action1 === "power-button" && action2 === "power-button") {
+    } // Les 2 joueurs utilisent leur pouvoir
+    else if (action1 === "power-button" && action2 === "power-button") {
       player1Champion.launchPower(player2Champion);
       player1Champion.charge = -1;
       player2Champion.launchPower(player1Champion);
       player2Champion.charge = -1;
     }
 
-    // Reset charge and disable power button if needed
+    // Reset les charges et désactive le bouton pouvoir
     if (action1 === "power-button" || action2 === "power-button") {
       setPowerButtonDisabledTo(true);
     }
   };
 
-  // Resolve the player actions
   resolveActions(player1Choice, player2Choice);
   endTurn();
 
-  // Enable power button if charge is full
+  // Active le bouton pouvoir pour le joueur 1 s'il a assez de charges
   if (player1Champion.charge >= player1Champion.maxPower) {
     setPowerButtonDisabledTo(false);
   }
 };
 
+// Ajoute un listener aux boutons de choix, la fonction permet de stocker le choix de l'utilisateur
 const choicesButtons = document.querySelector(".action-buttons").children;
 for (let i = 0; i < choicesButtons.length; i++) {
   const choice = choicesButtons[i].classList[0];
@@ -577,6 +595,10 @@ for (let i = 0; i < choicesButtons.length; i++) {
 let winner;
 let winnerCover;
 
+/**
+ *
+ * @returns {boolean} S'il y a une victoire, retourne vrai, sinon faux
+ */
 const checkWin = () => {
   const h1 = document.querySelector(".h1");
   const imgWin = document.createElement("img");
