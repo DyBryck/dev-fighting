@@ -646,8 +646,6 @@ let winnerCover;
  */
 const checkWin = () => {
   const h1 = document.querySelector(".h1");
-  const imgWin = document.createElement("img");
-  imgWin.classList.add("imgWin");
   if (player1Champion.health <= 0 && player2Champion.health <= 0) {
     winner = "Égalité";
     h1.innerText = `${winner}!`;
@@ -655,15 +653,10 @@ const checkWin = () => {
   } else if (player1Champion.health <= 0) {
     winner = "Player 2";
     winnerCover = player2Character.cover;
-    imgWin.src = winnerCover;
-    endGamePage.appendChild(imgWin);
     h1.innerText = `${winner} WIN!`;
     return true;
   } else if (player2Champion.health <= 0) {
     winner = "Player 1";
-    winnerCover = player1Character.cover;
-    imgWin.src = winnerCover;
-    endGamePage.appendChild(imgWin);
     h1.innerText = `${winner} WIN!`;
     return true;
   } else return false;
