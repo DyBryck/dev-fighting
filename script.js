@@ -141,7 +141,11 @@ const toggleView = (page) => {
   });
 };
 
-launchGameButton.addEventListener("click", () => toggleView(startingPage));
+const startSound = new Audio("./assets/audios/start-game.wav");
+launchGameButton.addEventListener("click", () => {
+  startSound.play();
+  toggleView(startingPage);
+});
 
 /**
  * @summary Retire la classe "force" qui force les images P1 et P2 à rester affichées
