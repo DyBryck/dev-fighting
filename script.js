@@ -128,21 +128,17 @@ const toggleView = (page) => {
 
   from.classList.add("fade-out");
 
-  from.addEventListener(
-    "animationend",
-    () => {
-      from.style.display = "none";
-      from.classList.remove("fade-out");
+  from.addEventListener("animationend", () => {
+    from.style.display = "none";
+    from.classList.remove("fade-out");
 
-      to.style.display = "flex";
-      to.classList.add("fade-in");
+    to.style.display = "flex";
+    to.classList.add("fade-in");
 
-      setTimeout(() => {
-        to.classList.add("visible");
-      }, 50);
-    },
-    { once: true },
-  );
+    setTimeout(() => {
+      to.classList.add("visible");
+    }, 50);
+  });
 };
 
 launchGameButton.addEventListener("click", () => toggleView(startingPage));
@@ -166,6 +162,35 @@ const resetForces = () => {
  */
 const handleHover = (img, display) => {
   img.style.display = display ? "block" : "none";
+};
+
+const statsContainer = document.querySelector(".stats-container");
+const showStatsOnHover = (character) => {
+  statsContainer.innerHTML = "";
+  const ul = document.createElement("ul");
+
+  const stats = {
+    HP: character.maxHealth,
+    ATK: character.attack,
+    DEF: character.defence,
+    POW: character.power,
+    Turns: character.maxPower,
+  };
+
+  for (const [key, value] of Object.entries(stats)) {
+    const li = document.createElement("li");
+
+    const statName = document.createElement("p");
+    statName.textContent = key;
+
+    const statValue = document.createElement("p");
+    statValue.textContent = value;
+
+    li.append(statName, statValue);
+    ul.appendChild(li);
+  }
+
+  statsContainer.appendChild(ul);
 };
 
 let player1Character;
@@ -234,11 +259,13 @@ const generateCovers = () => {
     coverContainer.addEventListener("mouseover", () => {
       if (currentPlayer === 3) return;
       handleHover(currentPlayer === 1 ? imgP1 : imgP2, true);
+      showStatsOnHover(character);
     });
 
-    coverContainer.addEventListener("mouseout", () =>
-      handleHover(currentPlayer === 1 ? imgP1 : imgP2, false),
-    );
+    coverContainer.addEventListener("mouseout", () => {
+      handleHover(currentPlayer === 1 ? imgP1 : imgP2, false);
+      statsContainer.innerHTML = "";
+    });
 
     coverContainer.addEventListener("click", () => {
       if (currentPlayer === 3) return;
@@ -252,33 +279,25 @@ const generateCovers = () => {
 
 generateCovers();
 
-function retour() {
-  const splashartLeft = document.querySelector(".splashart-left");
-  const splashartRight = document.querySelector(".splashart-right");
+let damagesTakenP1;
+let damagesTakenP2;
 
-  if (currentPlayer === 3) {
-    splashartRight.innerHTML = "";
+const frameP1 = document.querySelector(".frame-player-one");
+const frameP2 = document.querySelector(".frame-player-two");
+const showDamages = () => {
+  const createDamageElement = (damage, frame) => {
+    const damageElement = document.createElement("p");
+    damageElement.innerText = damage <= 0 ? damage : `- ${damage}`;
+    damageElement.classList.add("show-damage");
+    frame.appendChild(damageElement);
+    damageElement.addEventListener("animationend", () =>
+      damageElement.remove(),
+    );
+  };
 
-    // Masquer l'image P2
-    const imgP2 = document.querySelectorAll(".player2");
-    imgP2.forEach((img) => {
-      img.style.display = "none";
-    });
-  } else if (currentPlayer === 2) {
-    splashartLeft.innerHTML = "";
-
-    const imgP1 = document.querySelectorAll(".player1");
-    imgP1.forEach((img) => {
-      img.style.display = "none";
-    });
-  }
-
-  const annuler = document.querySelector(".annuler");
-  annuler.addEventListener("click", retour);
-
-  // Réduire currentPlayer tout en s'assurant qu'il ne descend pas en dessous de 1
-  currentPlayer = Math.max(currentPlayer - 1, 1);
-}
+  createDamageElement(damagesTakenP1, frameP1);
+  createDamageElement(damagesTakenP2, frameP2);
+};
 
 class Character {
   constructor(
@@ -303,6 +322,9 @@ class Character {
 
   launchAttack(target) {
     target.health -= this.attack;
+    currentPlayer === 1
+      ? (damagesTakenP1 = this.attack)
+      : (damagesTakenP2 = this.attack);
   }
 
   protect(damages) {
@@ -311,6 +333,9 @@ class Character {
 
   launchPower(target) {
     target.health -= this.power;
+    currentPlayer === 1
+      ? (damagesTakenP1 = this.power)
+      : (damagesTakenP2 = this.power);
   }
 }
 
@@ -325,9 +350,6 @@ const setPowerButtonDisabledTo = (trueOrFalse) => {
  * @param {*} p2Char Personnage du joueur 2
  */
 const generateFightInterface = (p1Char, p2Char) => {
-  const frameP1 = document.querySelector(".frame-player-one");
-  const frameP2 = document.querySelector(".frame-player-two");
-
   for (let i = 1; i <= 2; i++) {
     const avatar = document.createElement("img");
     avatar.src = i === 1 ? p1Char.cover : p2Char.cover;
@@ -514,7 +536,6 @@ const launchGame = () => {
 // Stock les actions des joueurs
 let player1Choice;
 let player2Choice;
-
 const getAction = (choice) => {
   if (player2Champion.charge >= player2Champion.maxPower) {
     setPowerButtonDisabledTo(false);
@@ -529,45 +550,76 @@ const getAction = (choice) => {
   showCurrentPlayer();
 };
 
+// Ajoute un listener aux boutons de choix, la fonction permet de stocker le choix de l'utilisateur
+const choicesButtons = document.querySelector(".action-buttons").children;
+for (let i = 0; i < choicesButtons.length; i++) {
+  const choice = choicesButtons[i].classList[0];
+  choicesButtons[i].addEventListener("click", () => getAction(choice));
+}
+
 const playAction = () => {
   // Fonction qui gère les actions des joueurs
   const resolveActions = (action1, action2) => {
     if (action1 === "attack-button" && action2 === "attack-button") {
       // Les deux joueurs attaquent
       player1Champion.launchAttack(player2Champion);
+      damagesTakenP2 = player1Champion.attack;
       player2Champion.launchAttack(player1Champion);
+      damagesTakenP1 = player1Champion.attack;
+      showDamages();
     } // Le joueur 1 attaque et le joueur 2 défend
     else if (action1 === "attack-button" && action2 === "defence-button") {
       player2Champion.protect(player1Champion.attack);
+      damagesTakenP1 = null;
+      damagesTakenP2 = player1Champion.attack - player2Champion.defence;
+      showDamages();
     } // Le joueur 1 attaque et le joueur 2 utilise son pouvoir
     else if (action1 === "attack-button" && action2 === "power-button") {
       player1Champion.launchAttack(player2Champion);
       player2Champion.launchPower(player1Champion);
       player2Champion.charge = -1;
+      damagesTakenP1 = player2Champion.power;
+      damagesTakenP2 = player1Champion.attack;
+      showDamages();
     } // Le joueur 1 défend et le joueur 2 attaque
     else if (action1 === "defence-button" && action2 === "attack-button") {
       player1Champion.protect(player2Champion.attack);
+      damagesTakenP1 = player2Champion.attack - player1Champion.defence;
+      damagesTakenP2 = null;
+      showDamages();
     } // Les deux joueurs défendent, rien ne se passe
     else if (action1 === "defence-button" && action2 === "defence-button") {
     } // Le joueur 1 défend et le joueur 2 utilise son pouvoir
     else if (action1 === "defence-button" && action2 === "power-button") {
       player1Champion.protect(player2Champion.power);
       player2Champion.charge = -1;
+      damagesTakenP1 = player2Champion.attack - player1Champion.power;
+      damagesTakenP2 = null;
+      showDamages();
     } // Le joueur 1 utilise son pouvoir et le joueur 2 attaque
     else if (action1 === "power-button" && action2 === "attack-button") {
       player1Champion.launchPower(player2Champion);
       player1Champion.charge = -1;
       player2Champion.launchAttack(player1Champion);
+      damagesTakenP1 = player2Champion.attack;
+      damagesTakenP2 = player1Champion.power;
+      showDamages();
     } // Le joueur 1 utilise son pouvoir et le joueur 2 défend
     else if (action1 === "power-button" && action2 === "defence-button") {
       player2Champion.protect(player1Champion.power);
       player1Champion.charge = -1;
+      damagesTakenP1 = null;
+      damagesTakenP2 = player1Champion.power - player2Champion.defence;
+      showDamages();
     } // Les 2 joueurs utilisent leur pouvoir
     else if (action1 === "power-button" && action2 === "power-button") {
       player1Champion.launchPower(player2Champion);
       player1Champion.charge = -1;
       player2Champion.launchPower(player1Champion);
       player2Champion.charge = -1;
+      damagesTakenP1 = player1Champion.power;
+      damagesTakenP2 = player2Champion.power;
+      showDamages();
     }
 
     // Reset les charges et désactive le bouton pouvoir
@@ -585,13 +637,6 @@ const playAction = () => {
   }
 };
 
-// Ajoute un listener aux boutons de choix, la fonction permet de stocker le choix de l'utilisateur
-const choicesButtons = document.querySelector(".action-buttons").children;
-for (let i = 0; i < choicesButtons.length; i++) {
-  const choice = choicesButtons[i].classList[0];
-  choicesButtons[i].addEventListener("click", () => getAction(choice));
-}
-
 let winner;
 let winnerCover;
 
@@ -605,6 +650,7 @@ const checkWin = () => {
   imgWin.classList.add("imgWin");
   if (player1Champion.health <= 0 && player2Champion.health <= 0) {
     winner = "Égalité";
+    h1.innerText = `${winner}!`;
     return true;
   } else if (player1Champion.health <= 0) {
     winner = "Player 2";

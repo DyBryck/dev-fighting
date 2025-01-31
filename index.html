@@ -11,26 +11,35 @@
     <title>Dev Fighting</title>
   </head>
   <body>
+    <!-- Début page de démarrage -->
     <div class="starting-page">
       <div class="logo">
         <img class="logoImg" src="./assets/logo.png" alt="" />
       </div>
       <div class="baspage">
-        <div class="startButton"><a href="#">Press start to play</a></div>
-        <div class="choix">
-          <p class="launch-game-button"><a href="#">Start</a></p>
+        <div class="startButton">
+          <a href="#">Appuyez sur démarrer pour jouer</a>
         </div>
-        <div class="credit">&copy; Tristan Valentin Dylan Alexis</div>
+        <div class="choix">
+          <p class="launch-game-button"><a href="#">Démarrer</a></p>
+        </div>
+        <div class="credit">&copy; Tristan Valentin Dylan</div>
       </div>
     </div>
+    <!-- Fin page de démarrage -->
+
+    <!-- Début page de sélection de personnage -->
     <div class="select-champ">
       <div class="splasharts-container">
         <div class="splashart-container splashart-left"></div>
         <div class="splashart-container splashart-right"></div>
-        <button class="annuler">Annuler</button>
       </div>
+      <div class="stats-container"></div>
       <div class="character-container"></div>
     </div>
+    <!-- Fin page de sélection de personnage -->
+
+    <!-- Début page de combat -->
     <div class="fighting-page">
       <div class="fighters">
         <div class="fighter fighter-one">
@@ -47,10 +56,14 @@
         <button disabled class="power-button">Power</button>
       </div>
     </div>
+    <!-- Fin page de combat -->
+
+    <!-- Début page de fin de partie -->
     <div class="endgame-page">
       <img class="logoend" src="./assets/logo.png" alt="" />
       <h1 class="h1"></h1>
     </div>
+    <!-- Fin page de fin de partie -->
   </body>
   <script src="script.js"></script>
 </html>

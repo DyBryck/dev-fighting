@@ -74,24 +74,24 @@ button {
 .startButton a {
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: blue;
-  color: white;
+  color: var(--text-color);
 }
 
 .choix a {
   -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: red;
+  -webkit-text-stroke-color: var(--highlight-red);
   padding: 10px;
-  color: white;
+  color: var(--text-color);
 }
 
 .choix a:hover {
-  -webkit-text-stroke-color: green;
+  -webkit-text-stroke-color: var(--highlight-green);
   font-size: 1.9rem;
 }
 
 .choix {
   -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: red;
+  -webkit-text-stroke-color: var(--highlight-red);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -109,12 +109,13 @@ button {
 
 .credit {
   margin-top: 8%;
-  color: orange;
+  color: var(--credit-color);
 }
 
 .select-champ {
-  display: none;
-  justify-content: center;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   position: relative;
   z-index: 0;
   overflow: hidden;
@@ -124,6 +125,33 @@ button {
   background-image: url("./assets/background/backvs.jpg");
   background-repeat: no-repeat;
   background-size: cover;
+  flex-direction: column;
+}
+
+.stats-container {
+  display: flex;
+  align-self: center;
+  justify-self: center;
+  color: white;
+  margin-bottom: 10%;
+}
+
+.stats-container ul {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 300px;
+  font-size: 2em;
+}
+
+.stats-container ul:first-child {
+  align-self: center;
+}
+
+.stats-container li {
+  display: flex;
+  justify-content: space-between;
 }
 
 .splasharts-container {
@@ -161,12 +189,10 @@ button {
 }
 
 .character-container {
-  justify-self: center;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 20px;
-  align-self: flex-end;
   width: 100%;
 }
 
@@ -218,18 +244,6 @@ button {
   display: block !important;
 }
 
-.annuler {
-  position: absolute;
-  bottom: 39%;
-  left: 47%;
-  width: 110px;
-  height: 40px;
-  background-color: transparent;
-  border-radius: 10px;
-  font-family: "Press Start 2P", serif;
-  color: brown;
-}
-
 .fighting-page {
   display: none;
   flex-direction: column;
@@ -262,7 +276,7 @@ button {
   align-items: center;
   font-size: 60px;
   font-weight: bold;
-  color: white;
+  color: var(--text-color);
   text-align: center;
 }
 
@@ -314,7 +328,7 @@ button {
   height: 100px;
   width: 350px;
   font-size: 30px;
-  color: white;
+  color: var(--text-color);
   font-weight: bold;
   padding: 5px;
   clip-path: polygon(77% 4%, 100% 53%, 83% 100%, 22% 100%, 0% 51%, 19% 1%);
@@ -388,7 +402,7 @@ button {
 
 .endgame-page,
 .h1 {
-  color: white;
+  color: var(--text-color);
   font-size: 1.2rem;
 }
 
@@ -396,4 +410,35 @@ button {
   width: 300px;
   height: 300px;
   position: absolute;
+}
+
+.frame {
+  position: relative;
+}
+
+.frame p {
+  z-index: 1;
+  position: absolute;
+  font-size: 30px;
+  top: 35%;
+  left: 20%;
+  color: crimson;
+}
+
+.show-damage {
+  animation: showDamage 1s forwards;
+}
+
+@keyframes showDamage {
+  from {
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(-30px);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
 }
