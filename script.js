@@ -36,7 +36,7 @@ const charactersList = [
   {
     name: "JavaScript",
     splashart: "./assets/splasharts/javascript.png",
-    cover: "./assets/covers/javascript.png",
+    cover: "./assets/covers/javascript.webp",
     maxHealth: 1800,
     health: 1800,
     attack: 90,
