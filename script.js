@@ -413,8 +413,8 @@ const showCurrentPlayer = () => {
 };
 
 /**
- * Appelée à la fin de chaque tour, augmente la charge des joueurs, vérifie s'il y a une victoire
- * reset les choix des joueurs, met à jour le texte du joueur actuel et active le bouton pouvoir
+ * Appelée à la fin de chaque tour, augmente la charge des joueurs, vérifie s'il y a une victoire,
+ * reset les choix des joueurs, met à jour le texte du joueur actuel et active le bouton Power
  * pour le joueur 1 s'il a assez de charges
  */
 const endTurn = () => {
