@@ -277,6 +277,8 @@ const generateCovers = () => {
       (currentPlayer === 1 ? imgP1 : imgP2).classList.add("force");
       showSplashart(currentPlayer, character, coverContainer);
       currentPlayer++;
+      const playerChoosing = document.querySelector(".player-choosing");
+      playerChoosing.textContent = "Joueur 2, choisissez votre personnage:";
     });
   });
 };
